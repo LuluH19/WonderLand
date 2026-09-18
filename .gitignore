@@ -50,6 +50,4 @@ app.*.map.json
 # Secrets
 .env
 google-services.json
-firebase_options.dart
 firebase.json
-firestore.rules
