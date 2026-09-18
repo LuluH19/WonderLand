@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Palette de couleurs de l'application.
-///
-/// Toutes les couleurs sont centralisées ici : si tu changes une valeur,
-/// elle change partout dans l'app. Format : 0xFF + code hexadécimal (RRGGBB).
 class AppColors {
-  // Constructeur privé : on n'instancie jamais cette classe,
-  // on écrit simplement `AppColors.primary`.
   AppColors._();
 
   /// Rouge des boutons et du logo.
