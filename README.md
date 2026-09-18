@@ -1,18 +1,147 @@
-# projet
+# WonderLand
 
-A new Flutter project.
+Application Flutter de voyage : on cherche un pays, Gemini génère un
+itinéraire de 3 jours dans sa capitale, et on le garde en favori (lisible
+hors-ligne). On peut aussi prendre une photo d'un lieu : Gemini Vision
+reconnaît le monument et le pays.
 
-## Getting Started
+## Fonctionnalités
 
-This project is a starting point for a Flutter application.
+| Écran | Ce qu'il fait |
+|---|---|
+| Sign in | Email / mot de passe, Google, Apple, ou invité (Firebase Auth) |
+| Search | Liste des pays via l'API publique REST Countries, filtre par nom ou capitale |
+| Country | Fiche du pays (capitale, population, langues, monnaie...) + choix du style de voyage |
+| Itinerary | Gemini génère 3 journées, bouton "SAVE TO FAVORITES" |
+| Photo | Caméra ou galerie, Gemini Vision devine le lieu et le pays, lien vers la fiche |
+| Saved | Favoris lus dans Isar (mode avion OK), synchronisés avec Cloud Firestore |
 
-A few resources to get you started if this is your first Flutter project:
+## Architecture (Riverpod 2.x)
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+```
+lib/
+├── main.dart                 # Firebase, App Check, ouverture Isar, ProviderScope
+├── models/                   # Objets simples : Country, Itinerary (Isar), PhotoAnalysis
+├── services/                 # Clients externes, une classe par techno
+│   ├── auth_service.dart         # Firebase Auth
+│   ├── countries_service.dart    # HTTP REST Countries
+│   ├── firestore_service.dart    # Cloud Firestore
+│   ├── gemini_service.dart       # Gemini (texte + vision) via Firebase AI Logic
+│   ├── local_db_service.dart     # Isar (base locale)
+│   └── photo_service.dart        # image_picker (caméra / galerie)
+├── repositories/             # Logique métier, combinent les services
+│   ├── country_repository.dart   # charge + filtre les pays
+│   ├── itinerary_repository.dart # génère, sauvegarde (Isar + Firestore), supprime
+│   └── photo_repository.dart     # photo -> Gemini Vision
+├── providers/                # Riverpod : l'état que les écrans observent
+│   ├── auth_providers.dart       # authStateProvider (StreamProvider)
+│   ├── country_providers.dart    # countriesProvider, searchQueryProvider
+│   ├── itinerary_providers.dart  # itineraryProvider (family), savedItinerariesProvider
+│   ├── photo_providers.dart      # photoProvider (AsyncNotifier)
+│   └── ui_providers.dart         # onglet actif, style choisi, bouton SAVED (StateProvider)
+├── screens/                  # Les écrans (ConsumerWidget), aucun calcul métier
+└── widgets/                  # AuthGate, AppShell (onglets), petits composants
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Le principe : un écran fait `ref.watch(unProvider)` et affiche le résultat
+avec `state.when(loading: ..., error: ..., data: ...)`. Les calculs (filtre,
+appels réseau, sauvegarde) sont dans les repositories et les services.
+
+Exemple, `lib/screens/search_page.dart` :
+
+```dart
+final countries = ref.watch(countriesProvider);
+final query = ref.watch(searchQueryProvider);
+return countries.when(
+  loading: () => const CircularProgressIndicator(),
+  error: (error, _) => MessageView(title: 'Could not load countries.', message: '$error'),
+  data: (all) => _CountryList(countries: repository.filter(all, query)),
+);
+```
+
+## Persistance double
+
+- **Isar** (`local_db_service.dart`, package `isar_community`, le fork
+  maintenu d'Isar 3 avec la même API) : chaque favori est écrit en local
+  d'abord. L'onglet Saved lit uniquement Isar, donc il marche en mode avion.
+- **Cloud Firestore** (`firestore_service.dart`) : le même favori est envoyé
+  dans `users/{uid}/itineraries/{id}`. Hors-ligne, Firestore garde l'écriture
+  en attente et l'envoie au retour du réseau. Au démarrage, les favoris du
+  cloud absents en local sont rapatriés (nouvel appareil).
+
+## Prérequis
+
+- Flutter 3.47 / Dart 3.13 (`flutter --version`)
+- Un projet Firebase avec Auth, Firestore et **AI Logic** (Gemini Developer
+  API) activés. Le fichier `lib/firebase_options.dart` est généré par
+  `flutterfire configure`.
+- Une clé REST Countries (gratuite) : https://restcountries.com/sign-up
+
+## Installation
+
+```sh
+flutter pub get
+cp .env.example .env         # puis renseigner REST_COUNTRIES_API_KEY
+dart run build_runner build --delete-conflicting-outputs   # régénère itinerary.g.dart (Isar)
+```
+
+### App Check (une fois par simulateur / appareil)
+
+En debug, App Check utilise un jeton de débogage. Lancer l'app, récupérer le
+jeton dans les logs (`App Check debug token: ...`, sur iOS via
+`xcrun simctl spawn booted log show --predicate 'eventMessage CONTAINS "App Check"'`)
+et l'ajouter dans Console Firebase > App Check > Gérer les jetons de débogage.
+Sans ça, Gemini répond avec une erreur de permission.
+
+## Lancer
+
+```sh
+flutter devices
+flutter run -d <id> --dart-define-from-file=.env
+```
+
+`--dart-define-from-file=.env` transmet la clé REST Countries à l'app.
+
+
+## Mode avion
+
+- Search : message "Could not load countries." + bouton RETRY.
+- Itinerary / Photo : message d'erreur Gemini + RETRY, pas de crash.
+- Saved : les favoris Isar s'affichent normalement.
+- Une sauvegarde faite hors-ligne est envoyée à Firestore à la reconnexion.
+
+## Modèle Gemini
+
+`GeminiService.modelName` (`gemini-3.5-flash-lite`) est utilisé pour le
+texte et les images. Si Google renvoie 503 (capacité), changer ce nom ou
+réessayer plus tard.
+
+## Pitch (3 min)
+
+1. Sign in en invité.
+2. Search "por" -> Portugal -> style FOOD -> GENERATE : Gemini répond.
+3. SAVE TO FAVORITES -> onglet SAVED -> couper le réseau : toujours visible.
+4. Onglet PHOTO -> galerie -> photo d'un monument -> Gemini Vision -> OPEN
+   <PAYS>.
+5. `flutter test` : 14 tests verts.
+
+## Sources et ressources
+
+- Support de cours "Architecture & Développement Mobile avec Flutter" (IIM,
+  projet fil rouge WanderLens AI) : architecture models / services /
+  providers / views, Riverpod 2.x, Isar, tests.
+- [Riverpod 2.x](https://riverpod.dev) : `FutureProvider`, `StreamProvider`,
+  `StateProvider`, `AsyncNotifier`, `.when()`.
+- [Firebase AI Logic](https://firebase.google.com/docs/ai-logic) : appels
+  Gemini (texte + image) via `firebase_ai`. Choisi à la place de
+  `google_generative_ai` vu en cours, ce package étant déprécié.
+- [isar_community](https://pub.dev/packages/isar_community) : fork maintenu
+  d'Isar 3, utilisé parce que le package `isar` officiel ne compile plus sur
+  Android récent.
+- [REST Countries](https://restcountries.com) : API publique des pays.
+- Vidéo de Graven, [Créer un bouton "Login with Google" en Flutter | Firebase
+  Auth](https://www.youtube.com/watch?v=DHDyrFxRdlw) : connexion Google avec
+  Firebase Auth, adaptée à `google_sign_in` 7.x.
+- Support de comment faire une page d'authetification [Building a Simple Login
+ Screen in Flutter](https://medium.com/@rohan.surve5/building-a-simple-login-screen-in-flutter-my-comeback-to-ui-development-60ebf1cd4bdc) : création d'une authetification en flutter.
 
