@@ -43,6 +43,11 @@ dependencies:
   http: ^1.6.0
   firebase_ai: ^4.0.0
   firebase_app_check: ^0.4.8
+  flutter_riverpod: ^2.6.1
+  image_picker: ^1.2.3
+  path_provider: ^2.1.6
+  isar_community: ^3.3.2
+  isar_community_flutter_libs: ^3.3.2
 
 dev_dependencies:
   flutter_test:
@@ -54,11 +59,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
-
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter packages.
+  build_runner: ^2.4.13
+  isar_community_generator: ^3.3.2
 flutter:
 
   # The following line ensures that the Material Icons font is

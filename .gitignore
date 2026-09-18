@@ -51,3 +51,6 @@ app.*.map.json
 .env
 google-services.json
 firebase.json
+
+# Gradle (build Android lancé depuis android/)
+android/build/

@@ -81,5 +81,9 @@
 	</array>
 	<key>GIDClientID</key>
 	<string>607542771093-k73fu6tclnuebcaav9dssemk3pgnjipb.apps.googleusercontent.com</string>
+	<key>NSCameraUsageDescription</key>
+	<string>WonderLand takes a photo so Gemini can recognise the place.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>WonderLand picks a photo so Gemini can recognise the place.</string>
 </dict>
 </plist>
