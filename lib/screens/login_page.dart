@@ -80,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  /// Apple n'est disponible que sur iPhone / iPad / Mac 
+  /// Apple n'est disponible que sur iPhone / iPad / Mac
   bool get _appleAvailable =>
       !kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.iOS ||
@@ -164,6 +164,11 @@ class _LoginPageState extends State<LoginPage> {
                           : "Don't have an account? Sign Up",
                     ),
                   ),
+                  if (!_isSignUp)
+                    TextButton(
+                      onPressed: _loading ? null : _forgotPassword,
+                      child: const Text('Forgot Password?'),
+                    ),
                 ],
               ),
               const SizedBox(height: 16),

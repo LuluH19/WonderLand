@@ -6,9 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
-
-/// Principe commun à Google et Apple : le package natif ouvre la fenêtre de
-/// connexion et nous rend un jeton ; on donne ce jeton à Firebase via
+// on donne ce jeton à Firebase via
 /// `signInWithCredential`, qui crée ou retrouve l'utilisateur Firebase.
 class AuthService {
   /// [auth] est injectable pour les tests ; par défaut on prend l'instance
