@@ -16,7 +16,6 @@ projet/
 │   ├── models/                  # 📦 Objets métiers & DTOs (Country, Itinerary)
 │   ├── services/                # 🌐 Clients externes (bas niveau)
 │   │   ├── countries_service.dart   # Appels HTTP REST Countries API
-│   │   ├── gemini_service.dart      # Intégration du SDK google_generative_ai
 │   │   ├── auth_service.dart        # Firebase Auth (connexion anonyme)
 │   │   └── firestore_service.dart   # Lecture / écriture Cloud Firestore
 │   ├── repositories/            # 🗄️ Source de vérité unique (orchestration des services)
@@ -28,7 +27,7 @@ projet/
 │   ├── unit/                    # Tests unitaires (parsing JSON, services)
 │   └── widget/                  # Tests de widgets (interactions)
 │
-├── .env.example                 # 🔑 Modèle de variables d'environnement (GEMINI_API_KEY)
+├── .env.example                 # 🔑 Modèle de variables d'environnement (REST Countries ; Gemini utilise Firebase)
 ├── .gitignore                   # 🙈 Fichiers exclus de Git (.env, build/, .dart_tool)
 ├── firebase.json                # 🔥 Config FlutterFire (apps Android / iOS)
 ├── pubspec.yaml                 # 📦 Dépendances et déclarations d'assets
