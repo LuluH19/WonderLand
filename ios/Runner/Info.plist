@@ -79,5 +79,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>GIDClientID</key>
+	<string>607542771093-k73fu6tclnuebcaav9dssemk3pgnjipb.apps.googleusercontent.com</string>
 </dict>
 </plist>
