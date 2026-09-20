@@ -4,56 +4,46 @@ import '../models/itinerary.dart';
 
 /// Lecture / écriture Cloud Firestore.
 ///
-/// Structure : `users/{uid}/itineraries/{itineraryId}`.
+/// Structure : `users/{uid}/itineraries/{cloudId}`.
 /// Chaque utilisateur (email ou invité) ne voit que sa sous-collection, ce que
 /// les règles de sécurité (`firestore.rules`) imposent aussi côté serveur.
-///
-/// Le cache hors-ligne est activé par défaut sur Android / iOS : les favoris
-/// restent lisibles sans réseau et les écritures sont rejouées à la reconnexion,
-/// ce qui correspond au "AVAILABLE OFFLINE" de la maquette.
 class FirestoreService {
-  FirestoreService({FirebaseFirestore? firestore})
-    : _firestore = firestore; // ignore: prefer_initializing_formals
-
-  FirebaseFirestore? _firestore;
-  FirebaseFirestore get _db => _firestore ??= FirebaseFirestore.instance;
-
   CollectionReference<Map<String, dynamic>> _itineraries(String uid) =>
-      _db.collection('users').doc(uid).collection('itineraries');
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('itineraries');
 
-  /// Flux des favoris d'un utilisateur, du plus récent au plus ancien.
-  /// Se met à jour tout seul à chaque ajout / suppression.
-  Stream<List<Itinerary>> watchItineraries(String uid) {
-    return _itineraries(uid)
-        .orderBy('createdAt', descending: true)
-        .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => Itinerary.fromMap(doc.id, doc.data()))
-              .toList(),
-        );
-  }
+  /// Génère un identifiant de document (fonctionne même hors-ligne).
+  String newId(String uid) => _itineraries(uid).doc().id;
 
-  /// Lecture unique (utile pour les tests ou un rafraîchissement manuel).
-  Future<List<Itinerary>> getItineraries(String uid) async {
+  /// Tous les favoris du cloud, du plus récent au plus ancien.
+  Future<List<Itinerary>> getAll(String uid) async {
     final snapshot = await _itineraries(uid)
         .orderBy('createdAt', descending: true)
         .get();
     return snapshot.docs
-        .map((doc) => Itinerary.fromMap(doc.id, doc.data()))
+        .map((doc) => Itinerary.fromMap(doc.data())..cloudId = doc.id)
         .toList();
   }
 
-  /// "SAVE TO FAVORITES" : crée le document et renvoie l'itinéraire avec
-  /// l'id attribué par Firestore.
-  Future<Itinerary> saveItinerary(String uid, Itinerary itinerary) async {
-    final doc = _itineraries(uid).doc();
-    await doc.set(itinerary.toMap());
-    return Itinerary.fromMap(doc.id, itinerary.toMap());
+  /// Écrit (ou remplace) le document `cloudId`.
+  ///
+  /// Une erreur (règles de sécurité, compte supprimé...) est avalée : le favori
+  /// est déjà dans Isar, l'app ne doit pas planter pour le cloud.
+  Future<void> save(String uid, Itinerary itinerary) async {
+    try {
+      await _itineraries(uid).doc(itinerary.cloudId).set(itinerary.toMap());
+    } catch (_) {
+      // Ignoré volontairement.
+    }
   }
 
-  /// "REMOVE" depuis l'écran Saved.
-  Future<void> deleteItinerary(String uid, String itineraryId) {
-    return _itineraries(uid).doc(itineraryId).delete();
+  Future<void> delete(String uid, String cloudId) async {
+    try {
+      await _itineraries(uid).doc(cloudId).delete();
+    } catch (_) {
+      // Ignoré volontairement.
+    }
   }
 }
