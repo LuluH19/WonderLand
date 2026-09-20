@@ -1,51 +1,59 @@
-/// Une journée d'un itinéraire généré par Gemini ("DAY 1 - Alfama & the river").
-class ItineraryDay {
-  const ItineraryDay({required this.title, required this.description});
+import 'package:isar_community/isar.dart';
 
-  final String title;
-  final String description;
+// Ce fichier est généré par `dart run build_runner build` (voir README).
+part 'itinerary.g.dart';
+
+/// Une journée d'un itinéraire ("DAY 1 - Alfama & the river").
+///
+/// `@embedded` : Isar range cet objet à l'intérieur de [Itinerary],
+/// il n'a pas de table à lui.
+@embedded
+class ItineraryDay {
+  String title = '';
+  String description = '';
 
   Map<String, dynamic> toMap() => {'title': title, 'description': description};
 
-  factory ItineraryDay.fromMap(Map<String, dynamic> map) => ItineraryDay(
-    title: map['title'] as String? ?? '',
-    description: map['description'] as String? ?? '',
-  );
+  static ItineraryDay fromMap(Map<String, dynamic> map) {
+    return ItineraryDay()
+      ..title = map['title'] as String? ?? ''
+      ..description = map['description'] as String? ?? '';
+  }
 }
 
-/// Itinéraire sauvegardé dans les favoris ("Lisbon · 3 days · Portugal · Food").
-/// Stocké dans Firestore sous `users/{uid}/itineraries/{id}`.
+/// Itinéraire généré par Gemini puis sauvegardé.
+///
+/// Sauvegardé deux fois : en local avec Isar (lisible hors-ligne) et dans
+/// Firestore sous `users/{uid}/itineraries/{cloudId}`.
+@collection
 class Itinerary {
-  const Itinerary({
-    required this.id,
-    required this.countryName,
-    required this.city,
-    required this.travelStyle,
-    required this.summary,
-    required this.days,
-    required this.createdAt,
-  });
+  /// Identifiant local Isar (attribué automatiquement).
+  Id id = Isar.autoIncrement;
 
-  /// Identifiant du document Firestore.
-  final String id;
+  /// Identifiant du document Firestore, pour pouvoir le supprimer aussi.
+  String cloudId = '';
+
+  /// Utilisateur propriétaire (uid Firebase).
+  String uid = '';
 
   /// Pays choisi sur l'écran de recherche ("Portugal").
-  final String countryName;
+  String countryName = '';
 
   /// Capitale / ville de l'itinéraire ("Lisbon").
-  final String city;
+  String city = '';
 
-  /// Style de voyage sélectionné ("Food", "History", "Nature", "Nightlife").
-  final String travelStyle;
+  /// Style de voyage sélectionné ("FOOD", "HISTORY", ...).
+  String travelStyle = '';
 
   /// Phrase d'introduction renvoyée par Gemini.
-  final String summary;
+  String summary = '';
 
   /// Les journées, dans l'ordre.
-  final List<ItineraryDay> days;
+  List<ItineraryDay> days = [];
 
-  final DateTime createdAt;
+  DateTime createdAt = DateTime.now();
 
+  /// Format envoyé à Firestore.
   Map<String, dynamic> toMap() => {
     'countryName': countryName,
     'city': city,
@@ -55,17 +63,19 @@ class Itinerary {
     'createdAt': createdAt.toIso8601String(),
   };
 
-  factory Itinerary.fromMap(String id, Map<String, dynamic> map) => Itinerary(
-    id: id,
-    countryName: map['countryName'] as String? ?? '',
-    city: map['city'] as String? ?? '',
-    travelStyle: map['travelStyle'] as String? ?? '',
-    summary: map['summary'] as String? ?? '',
-    days: (map['days'] as List<dynamic>? ?? const [])
-        .map((d) => ItineraryDay.fromMap(Map<String, dynamic>.from(d as Map)))
-        .toList(),
-    createdAt:
-        DateTime.tryParse(map['createdAt'] as String? ?? '') ??
-        DateTime.fromMillisecondsSinceEpoch(0),
-  );
+  /// Lecture d'un document Firestore (ou de la réponse JSON de Gemini).
+  static Itinerary fromMap(Map<String, dynamic> map) {
+    final rawDays = map['days'] as List<dynamic>? ?? const [];
+    return Itinerary()
+      ..countryName = map['countryName'] as String? ?? ''
+      ..city = map['city'] as String? ?? ''
+      ..travelStyle = map['travelStyle'] as String? ?? ''
+      ..summary = map['summary'] as String? ?? ''
+      ..days = rawDays
+          .map((d) => ItineraryDay.fromMap(Map<String, dynamic>.from(d as Map)))
+          .toList()
+      ..createdAt =
+          DateTime.tryParse(map['createdAt'] as String? ?? '') ??
+          DateTime.now();
+  }
 }
