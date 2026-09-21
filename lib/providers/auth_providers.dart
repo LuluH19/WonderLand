@@ -7,7 +7,7 @@ import '../services/auth_service.dart';
 final authServiceProvider = Provider<AuthService>((ref) => AuthService());
 
 /// Utilisateur connecté (ou `null`). Se met à jour à chaque connexion /
-/// déconnexion : c'est ce que l'AuthGate écoute.
+/// déconnexion : c'est ce que le routeur (redirect) écoute.
 final authStateProvider = StreamProvider<User?>((ref) {
   return ref.watch(authServiceProvider).authStateChanges;
 });

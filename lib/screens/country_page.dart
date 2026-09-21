@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../constants/app_colors.dart';
 import '../models/country.dart';
 import '../providers/ui_providers.dart';
-import 'itinerary_page.dart';
 
 /// Fiche pays de la maquette (parcours-2.png) : bandeau drapeau, six faits
 /// en grille 2x3, puis le choix du style de voyage et le bouton Gemini.
@@ -66,7 +66,7 @@ class _FlagBanner extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextButton.icon(
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: () => context.pop(),
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: AppColors.textDark,
@@ -238,14 +238,9 @@ class _TravelStyleSection extends ConsumerWidget {
           const Divider(color: AppColors.border, thickness: 1),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) =>
-                      ItineraryPage(country: country, travelStyle: selected),
-                ),
-              );
-            },
+            // Le style part dans l'URL, le pays (objet complet) dans `extra`.
+            onPressed: () =>
+                context.push('/itinerary?style=$selected', extra: country),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,

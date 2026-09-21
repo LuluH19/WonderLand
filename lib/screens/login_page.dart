@@ -35,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   /// Exécute une action Firebase en gérant le spinner et le message d'erreur.
-  /// Pas de navigation ici : l'AuthGate réagit à authStateChanges.
+  /// Pas de navigation ici : le routeur réagit à authStateChanges (redirect).
   Future<void> _run(Future<void> Function() action) async {
     setState(() {
       _loading = true;

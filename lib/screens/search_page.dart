@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../constants/app_colors.dart';
 import '../models/country.dart';
 import '../providers/country_providers.dart';
 import '../widgets/message_view.dart';
-import 'country_page.dart';
 
 /// Écran "Search any country." (parcours-1.png).
 ///
@@ -170,9 +170,7 @@ class CountryTile extends StatelessWidget {
         style: const TextStyle(color: AppColors.textGrey, fontSize: 12),
       ),
       trailing: const Icon(Icons.arrow_forward, color: AppColors.primary),
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute<void>(builder: (_) => CountryPage(country: country)),
-      ),
+      onTap: () => context.push('/country', extra: country),
     );
   }
 }

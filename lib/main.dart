@@ -6,9 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'constants/app_colors.dart';
 import 'firebase_options.dart';
+import 'providers/auth_providers.dart';
 import 'providers/itinerary_providers.dart';
 import 'services/local_db_service.dart';
-import 'widgets/auth_gate.dart';
+import 'router/app_router.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,19 +37,28 @@ Future<void> main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Firebase restaure la session précédente au démarrage : on attend la
+    // première valeur avant de brancher le routeur (sinon le login
+    // apparaîtrait une fraction de seconde).
+    if (ref.watch(authStateProvider).isLoading) {
+      return const MaterialApp(
+        home: Scaffold(body: Center(child: CircularProgressIndicator())),
+      );
+    }
+
+    return MaterialApp.router(
       title: 'WonderLand',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
         scaffoldBackgroundColor: AppColors.background,
       ),
-      // L'AuthGate choisit LoginPage ou l'app selon la session Firebase.
-      home: const AuthGate(),
+      // GoRouter choisit l'écran (login ou app) et gère les pages empilées.
+      routerConfig: ref.watch(routerProvider),
     );
   }
 }

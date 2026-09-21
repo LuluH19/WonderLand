@@ -27,7 +27,7 @@ class AuthService {
   /// `true` si l'utilisateur est un invité (connexion anonyme).
   bool get isGuest => currentUser?.isAnonymous ?? false;
 
-  /// Flux émis à chaque connexion / déconnexion. C'est ce que l'AuthGate
+  /// Flux émis à chaque connexion / déconnexion. C'est ce que le routeur
   /// écoute pour choisir entre LoginPage et l'application.
   Stream<User?> get authStateChanges => _instance.authStateChanges();
 
