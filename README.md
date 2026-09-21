@@ -5,6 +5,8 @@ itinéraire de 3 jours dans sa capitale, et on le garde en favori (lisible
 hors-ligne). On peut aussi prendre une photo d'un lieu : Gemini Vision
 reconnaît le monument et le pays.
 
+## Vidéo présentation 
+
 ## Fonctionnalités
 
 | Écran | Ce qu'il fait |
@@ -16,11 +18,11 @@ reconnaît le monument et le pays.
 | Photo | Caméra ou galerie, Gemini Vision devine le lieu et le pays, lien vers la fiche |
 | Saved | Favoris lus dans Isar (mode avion OK), synchronisés avec Cloud Firestore |
 
-## Architecture (Riverpod 2.x)
+## Architecture (Riverpod 2.x + GoRouter)
 
 ```
 lib/
-├── main.dart                 # Firebase, App Check, ouverture Isar, ProviderScope
+├── main.dart                 # Firebase, App Check, ouverture Isar, ProviderScope, MaterialApp.router
 ├── models/                   # Objets simples : Country, Itinerary (Isar), PhotoAnalysis
 ├── services/                 # Clients externes, une classe par techno
 │   ├── auth_service.dart         # Firebase Auth
@@ -39,13 +41,19 @@ lib/
 │   ├── itinerary_providers.dart  # itineraryProvider (family), savedItinerariesProvider
 │   ├── photo_providers.dart      # photoProvider (AsyncNotifier)
 │   └── ui_providers.dart         # onglet actif, style choisi, bouton SAVED (StateProvider)
+├── router/
+│   └── app_router.dart       # GoRouter : /login, /, /country, /itinerary + redirect auth
 ├── screens/                  # Les écrans (ConsumerWidget), aucun calcul métier
-└── widgets/                  # AuthGate, AppShell (onglets), petits composants
+└── widgets/                  # AppShell (onglets), DayCard, MessageView
 ```
 
 Le principe : un écran fait `ref.watch(unProvider)` et affiche le résultat
 avec `state.when(loading: ..., error: ..., data: ...)`. Les calculs (filtre,
 appels réseau, sauvegarde) sont dans les repositories et les services.
+
+La navigation passe par GoRouter : les écrans font
+`context.push('/country', extra: country)` et le `redirect` du routeur
+renvoie vers `/login` tant que personne n'est connecté.
 
 Exemple, `lib/screens/search_page.dart` :
 
@@ -123,15 +131,27 @@ réessayer plus tard.
 3. SAVE TO FAVORITES -> onglet SAVED -> couper le réseau : toujours visible.
 4. Onglet PHOTO -> galerie -> photo d'un monument -> Gemini Vision -> OPEN
    <PAYS>.
-5. `flutter test` : 14 tests verts.
+5. `flutter test` : 18 tests verts.
+
+## Documentation technique
+
+Le dossier [`docs/`](docs/readme.md) détaille le projet :
+
+- [architecture.md](docs/architecture.md) : couches, providers Riverpod, navigation, gestion des erreurs
+- [data-and-persistence.md](docs/data-and-persistence.md) : modèles, Isar, Firestore, stratégie hors-ligne
+- [services.md](docs/services.md) : REST Countries, Firebase Auth, Gemini, App Check, image_picker
+- [setup.md](docs/setup.md) : configuration Firebase pas à pas, lancement, dépannage
+- [testing.md](docs/testing.md) : stratégie et inventaire des 18 tests
 
 ## Sources et ressources
 
 - Support de cours "Architecture & Développement Mobile avec Flutter" (IIM,
   projet fil rouge WanderLens AI) : architecture models / services /
-  providers / views, Riverpod 2.x, Isar, tests.
+  providers / views, Riverpod 2.x, GoRouter, Isar, tests.
 - [Riverpod 2.x](https://riverpod.dev) : `FutureProvider`, `StreamProvider`,
   `StateProvider`, `AsyncNotifier`, `.when()`.
+- [go_router](https://pub.dev/packages/go_router) : routes centralisées,
+  `context.push`, `extra`, query parameters, `redirect`.
 - [Firebase AI Logic](https://firebase.google.com/docs/ai-logic) : appels
   Gemini (texte + image) via `firebase_ai`. Choisi à la place de
   `google_generative_ai` vu en cours, ce package étant déprécié.
@@ -142,6 +162,5 @@ réessayer plus tard.
 - Vidéo de Graven, [Créer un bouton "Login with Google" en Flutter | Firebase
   Auth](https://www.youtube.com/watch?v=DHDyrFxRdlw) : connexion Google avec
   Firebase Auth, adaptée à `google_sign_in` 7.x.
-- Support de comment faire une page d'authetification [Building a Simple Login
- Screen in Flutter](https://medium.com/@rohan.surve5/building-a-simple-login-screen-in-flutter-my-comeback-to-ui-development-60ebf1cd4bdc) : création d'une authetification en flutter.
+- Article [Building a Simple Login Screen in Flutter](https://medium.com/@rohan.surve5/building-a-simple-login-screen-in-flutter-my-comeback-to-ui-development-60ebf1cd4bdc) : structure de l'écran de connexion.
 
