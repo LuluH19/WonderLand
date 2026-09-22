@@ -1,11 +1,33 @@
+<div align="center">
+
 # WonderLand
 
-Application Flutter de voyage : on cherche un pays, Gemini génère un
-itinéraire de 3 jours dans sa capitale, et on le garde en favori (lisible
-hors-ligne). On peut aussi prendre une photo d'un lieu : Gemini Vision
-reconnaît le monument et le pays.
+**Cherche un pays, laisse Gemini écrire ton itinéraire de 3 jours, garde-le lisible hors-ligne.**
+**Prends la photo d'un monument : Gemini Vision devine le lieu et le pays.**
 
-## Vidéo présentation 
+[![Flutter](https://img.shields.io/badge/Flutter-3.47-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.13-0175C2?logo=dart&logoColor=white)](https://dart.dev)
+[![Riverpod](https://img.shields.io/badge/Riverpod-2.6-40C4FF)](https://riverpod.dev)
+[![go_router](https://img.shields.io/badge/go__router-18.0-0B7285)](https://pub.dev/packages/go_router)
+[![Firebase](https://img.shields.io/badge/Firebase-Auth%20%7C%20Firestore%20%7C%20AI%20Logic-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com)
+[![Isar](https://img.shields.io/badge/Isar-3%20(community)-6E56CF)](https://pub.dev/packages/isar_community)
+[![Gemini](https://img.shields.io/badge/Gemini-3.5%20flash--lite-8E75B2?logo=googlegemini&logoColor=white)](https://firebase.google.com/docs/ai-logic)
+
+Projet fil rouge M2 IWID - IIM &middot; Android &amp; iOS
+
+</div>
+
+---
+
+## Démo
+
+| Recherche d'un pays | Itinéraire par Gemini | Gemini Vision | Favoris hors-ligne |
+|:---:|:---:|:---:|:---:|
+| <img src="docs/Video-App/search.gif" alt="Recherche d'un pays" width="180"> | <img src="docs/Video-App/itinerary.gif" alt="Itineraire genere par Gemini" width="180"> | <img src="docs/Video-App/photo.gif" alt="Reconnaissance d'une photo" width="180"> | <img src="docs/Video-App/saved.gif" alt="Favoris lisibles hors-ligne" width="180"> |
+| REST Countries, filtre instantané | 3 journées écrites par Gemini | La photo est identifiée, lien vers le pays | Lus dans Isar, visibles sans réseau |
+
+Démo complète (1 min 37, enregistrée sur iPhone 17) :
+[apple-recording.mp4](docs/Video-App/apple-recording.mp4).
 
 ## Fonctionnalités
 
@@ -77,7 +99,9 @@ return countries.when(
   en attente et l'envoie au retour du réseau. Au démarrage, les favoris du
   cloud absents en local sont rapatriés (nouvel appareil).
 
-## Prérequis
+## Démarrage rapide
+
+### Prérequis
 
 - Flutter 3.47 / Dart 3.13 (`flutter --version`)
 - Un projet Firebase avec Auth, Firestore et **AI Logic** (Gemini Developer
@@ -85,7 +109,7 @@ return countries.when(
   `flutterfire configure`.
 - Une clé REST Countries (gratuite) : https://restcountries.com/sign-up
 
-## Installation
+### Installation
 
 ```sh
 flutter pub get
@@ -93,15 +117,7 @@ cp .env.example .env         # puis renseigner REST_COUNTRIES_API_KEY
 dart run build_runner build --delete-conflicting-outputs   # régénère itinerary.g.dart (Isar)
 ```
 
-### App Check (une fois par simulateur / appareil)
-
-En debug, App Check utilise un jeton de débogage. Lancer l'app, récupérer le
-jeton dans les logs (`App Check debug token: ...`, sur iOS via
-`xcrun simctl spawn booted log show --predicate 'eventMessage CONTAINS "App Check"'`)
-et l'ajouter dans Console Firebase > App Check > Gérer les jetons de débogage.
-Sans ça, Gemini répond avec une erreur de permission.
-
-## Lancer
+### Lancer
 
 ```sh
 flutter devices
@@ -110,6 +126,13 @@ flutter run -d <id> --dart-define-from-file=.env
 
 `--dart-define-from-file=.env` transmet la clé REST Countries à l'app.
 
+### App Check (une fois par simulateur / appareil)
+
+En debug, App Check utilise un jeton de débogage. Lancer l'app, récupérer le
+jeton dans les logs (`App Check debug token: ...`, sur iOS via
+`xcrun simctl spawn booted log show --predicate 'eventMessage CONTAINS "App Check"'`)
+et l'ajouter dans Console Firebase > App Check > Gérer les jetons de débogage.
+Sans ça, Gemini répond avec une erreur de permission.
 
 ## Mode avion
 
@@ -131,23 +154,24 @@ réessayer plus tard.
 3. SAVE TO FAVORITES -> onglet SAVED -> couper le réseau : toujours visible.
 4. Onglet PHOTO -> galerie -> photo d'un monument -> Gemini Vision -> OPEN
    <PAYS>.
-5. `flutter test` : 18 tests verts.
 
 ## Documentation technique
 
-Le dossier [`docs/`](docs/readme.md) détaille le projet :
+Le dossier [`docs/`](docs/Documentation-technique.md) détaille le projet :
 
-- [architecture.md](docs/architecture.md) : couches, providers Riverpod, navigation, gestion des erreurs
-- [data-and-persistence.md](docs/data-and-persistence.md) : modèles, Isar, Firestore, stratégie hors-ligne
-- [services.md](docs/services.md) : REST Countries, Firebase Auth, Gemini, App Check, image_picker
-- [setup.md](docs/setup.md) : configuration Firebase pas à pas, lancement, dépannage
-- [testing.md](docs/testing.md) : stratégie et inventaire des 18 tests
+| Document | Contenu |
+|---|---|
+| [architecture.md](docs/architecture.md) | Couches, providers Riverpod, navigation GoRouter, gestion des erreurs |
+| [data-and-persistence.md](docs/data-and-persistence.md) | Modèles, Isar, Firestore, stratégie hors-ligne |
+| [services.md](docs/services.md) | REST Countries, Firebase Auth, Gemini, App Check, image_picker |
+| [setup.md](docs/setup.md) | Configuration Firebase pas à pas, lancement, dépannage |
+| [Image-Design/](docs/Image-Design/) | Maquettes des écrans |
 
 ## Sources et ressources
 
 - Support de cours "Architecture & Développement Mobile avec Flutter" (IIM,
   projet fil rouge WanderLens AI) : architecture models / services /
-  providers / views, Riverpod 2.x, GoRouter, Isar, tests.
+  providers / views, Riverpod 2.x, GoRouter, Isar.
 - [Riverpod 2.x](https://riverpod.dev) : `FutureProvider`, `StreamProvider`,
   `StateProvider`, `AsyncNotifier`, `.when()`.
 - [go_router](https://pub.dev/packages/go_router) : routes centralisées,
@@ -163,4 +187,3 @@ Le dossier [`docs/`](docs/readme.md) détaille le projet :
   Auth](https://www.youtube.com/watch?v=DHDyrFxRdlw) : connexion Google avec
   Firebase Auth, adaptée à `google_sign_in` 7.x.
 - Article [Building a Simple Login Screen in Flutter](https://medium.com/@rohan.surve5/building-a-simple-login-screen-in-flutter-my-comeback-to-ui-development-60ebf1cd4bdc) : structure de l'écran de connexion.
-
