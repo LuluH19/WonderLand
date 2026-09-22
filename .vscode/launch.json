@@ -1,0 +1,39 @@
+{
+  // Configurations de lancement VS Code pour WonderLand.
+  //
+  // Elles ajoutent toutes "--dart-define-from-file=.env", qui transmet la cle
+  // REST_COUNTRIES_API_KEY a l'application. Sans elle, l'ecran Search affiche
+  // "Cle REST_COUNTRIES_API_KEY manquante".
+  //
+  // Utilisation : F5, ou le bouton "Run and Debug" de la barre laterale, puis
+  // choisir la configuration dans la liste deroulante. Le peripherique est
+  // celui selectionne en bas a droite de VS Code.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "WonderLand (debug)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "toolArgs": ["--dart-define-from-file=.env"]
+    },
+    {
+      // Mode profile : performances reelles, DevTools disponible, pas de hot reload.
+      "name": "WonderLand (profile)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "flutterMode": "profile",
+      "toolArgs": ["--dart-define-from-file=.env"]
+    },
+    {
+      // Mode release : ce que verra un utilisateur final.
+      "name": "WonderLand (release)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "flutterMode": "release",
+      "toolArgs": ["--dart-define-from-file=.env"]
+    }
+  ]
+}

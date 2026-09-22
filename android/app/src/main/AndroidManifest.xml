@@ -1,4 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Réseau : REST Countries, Firebase et Gemini. En debug, Flutter ajoute
+         déjà cette permission, mais pas en release. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:label="projet"
         android:name="${applicationName}"

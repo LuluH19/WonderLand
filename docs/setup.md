@@ -134,8 +134,14 @@ flutter run -d <id-de-l-appareil> --dart-define-from-file=.env
 Sans `--dart-define-from-file=.env`, l'écran Search affiche le message
 `Clé REST_COUNTRIES_API_KEY manquante`.
 
-Dans Android Studio ou VS Code, ajouter `--dart-define-from-file=.env` dans
-les "Additional run args" de la configuration de lancement.
+Dans **VS Code**, il n'y a rien à taper : le dossier `.vscode/` du dépôt
+contient un `launch.json` avec trois configurations (debug, profile,
+release) qui passent déjà l'option. F5 lance l'app sur l'appareil
+sélectionné en bas à droite.
+
+Dans **Android Studio**, ajouter `--dart-define-from-file=.env` dans les
+"Additional run args" de la configuration de lancement
+(Run > Edit Configurations).
 
 ## 7. Vérifications
 

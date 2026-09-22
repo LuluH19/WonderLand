@@ -126,6 +126,9 @@ flutter run -d <id> --dart-define-from-file=.env
 
 `--dart-define-from-file=.env` transmet la clé REST Countries à l'app.
 
+Dans VS Code, **F5** suffit : `.vscode/launch.json` contient les trois
+configurations (debug, profile, release) avec l'option déjà en place.
+
 ### App Check (une fois par simulateur / appareil)
 
 En debug, App Check utilise un jeton de débogage. Lancer l'app, récupérer le
@@ -169,21 +172,57 @@ Le dossier [`docs/`](docs/Documentation-technique.md) détaille le projet :
 
 ## Sources et ressources
 
-- Support de cours "Architecture & Développement Mobile avec Flutter" (IIM,
-  projet fil rouge WanderLens AI) : architecture models / services /
-  providers / views, Riverpod 2.x, GoRouter, Isar.
-- [Riverpod 2.x](https://riverpod.dev) : `FutureProvider`, `StreamProvider`,
-  `StateProvider`, `AsyncNotifier`, `.when()`.
-- [go_router](https://pub.dev/packages/go_router) : routes centralisées,
-  `context.push`, `extra`, query parameters, `redirect`.
-- [Firebase AI Logic](https://firebase.google.com/docs/ai-logic) : appels
-  Gemini (texte + image) via `firebase_ai`. Choisi à la place de
-  `google_generative_ai` vu en cours, ce package étant déprécié.
-- [isar_community](https://pub.dev/packages/isar_community) : fork maintenu
-  d'Isar 3, utilisé parce que le package `isar` officiel ne compile plus sur
-  Android récent.
-- [REST Countries](https://restcountries.com) : API publique des pays.
-- Vidéo de Graven, [Créer un bouton "Login with Google" en Flutter | Firebase
-  Auth](https://www.youtube.com/watch?v=DHDyrFxRdlw) : connexion Google avec
-  Firebase Auth, adaptée à `google_sign_in` 7.x.
-- Article [Building a Simple Login Screen in Flutter](https://medium.com/@rohan.surve5/building-a-simple-login-screen-in-flutter-my-comeback-to-ui-development-60ebf1cd4bdc) : structure de l'écran de connexion.
+Toutes les références consultées pour écrire ce projet, regroupées par thème.
+
+### Cours et tutoriels
+
+| Source | Ce que j'y ai pris |
+|---|---|
+| Support de cours "Architecture & Développement Mobile avec Flutter" (IIM, projet fil rouge WanderLens AI) | Le découpage models / services / providers / views, Riverpod 2.x, GoRouter, Isar, le principe du projet |
+| Vidéo de Graven, [Créer un bouton "Login with Google" en Flutter \| Firebase Auth](https://www.youtube.com/watch?v=DHDyrFxRdlw) | La connexion Google avec Firebase Auth, adaptée ensuite à `google_sign_in` 7.x |
+| Article [Building a Simple Login Screen in Flutter](https://medium.com/@rohan.surve5/building-a-simple-login-screen-in-flutter-my-comeback-to-ui-development-60ebf1cd4bdc) | La structure de l'écran de connexion |
+
+### Flutter, état et navigation
+
+| Source | Ce que j'y ai pris |
+|---|---|
+| [Documentation Flutter](https://docs.flutter.dev) et [API Flutter](https://api.flutter.dev) | Widgets, `IndexedStack`, `ListView`, thèmes, `ScaffoldMessenger` |
+| [Navigation et routage](https://docs.flutter.dev/ui/navigation) | Différence entre Navigator 1.0 et le routage déclaratif |
+| [Riverpod 2.x](https://riverpod.dev) | `Provider`, `FutureProvider`, `StreamProvider`, `StateProvider`, `AsyncNotifier`, `.when()`, `ProviderScope` et les overrides |
+| [go_router](https://pub.dev/packages/go_router) | Routes centralisées, `context.push`, `extra`, query parameters, `redirect` comme garde d'authentification |
+
+### Firebase
+
+| Source | Ce que j'y ai pris |
+|---|---|
+| [Ajouter Firebase à une app Flutter](https://firebase.google.com/docs/flutter/setup) | `flutterfire configure`, `firebase_options.dart`, `google-services.json` |
+| [Firebase Auth avec Flutter](https://firebase.google.com/docs/auth/flutter/start) | Email / mot de passe, connexion anonyme, `authStateChanges()` |
+| [Fournisseurs fédérés](https://firebase.google.com/docs/auth/flutter/federated-auth) | Google et Apple, `OAuthProvider`, le nonce haché pour Apple |
+| [Cloud Firestore](https://firebase.google.com/docs/firestore) | Sous-collection `users/{uid}/itineraries`, persistance hors-ligne |
+| [Règles de sécurité Firestore](https://firebase.google.com/docs/firestore/security/get-started) | Le fichier `firestore.rules`, un utilisateur ne lit que ses documents |
+| [Firebase App Check](https://firebase.google.com/docs/app-check) | Fournisseurs de débogage, enregistrement des jetons par appareil |
+| [Firebase AI Logic](https://firebase.google.com/docs/ai-logic) | Appels Gemini texte et image via `firebase_ai`, réponses en JSON avec `Schema`. Choisi à la place de `google_generative_ai` vu en cours, ce package étant déprécié |
+
+### Packages utilisés (documentation pub.dev)
+
+| Package | Ce que j'y ai pris |
+|---|---|
+| [flutter_riverpod](https://pub.dev/packages/flutter_riverpod) | Gestion d'état, version 2.x imposée par le cours |
+| [go_router](https://pub.dev/packages/go_router) | Navigation déclarative |
+| [firebase_ai](https://pub.dev/packages/firebase_ai) | Gemini côté client |
+| [firebase_app_check](https://pub.dev/packages/firebase_app_check) | Protection des appels Firebase |
+| [google_sign_in](https://pub.dev/packages/google_sign_in) | Migration vers l'API 7.x : `initialize()` puis `authenticate()` |
+| [google_sign_in_android](https://pub.dev/packages/google_sign_in_android) | Pourquoi aucun `serverClientId` n'est nécessaire quand `google-services.json` contient un client OAuth web |
+| [sign_in_with_apple](https://pub.dev/packages/sign_in_with_apple) | Le flux Apple, et le fait qu'il exige un [compte développeur Apple payant](https://developer.apple.com/programs/whats-included/) |
+| [isar_community](https://pub.dev/packages/isar_community) | Fork maintenu d'Isar 3, utilisé parce que le package `isar` officiel ne compile plus sur Android récent |
+| [image_picker](https://pub.dev/packages/image_picker) | Caméra et galerie, options `maxWidth` et `imageQuality` |
+| [http](https://pub.dev/packages/http) | Appels REST et injection du client pour isoler le réseau |
+| [crypto](https://pub.dev/packages/crypto) | SHA-256 du nonce Apple |
+| [path_provider](https://pub.dev/packages/path_provider) | Dossier de la base Isar |
+
+### API publique
+
+| Source | Ce que j'y ai pris |
+|---|---|
+| [REST Countries](https://restcountries.com) | La liste des pays, leurs capitales, langues, monnaies et drapeaux |
+
