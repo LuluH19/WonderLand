@@ -33,7 +33,7 @@ Démo complète (1 min 37, enregistrée sur iPhone 17) :
 
 | Écran | Ce qu'il fait |
 |---|---|
-| Sign in | Email / mot de passe, Google, Apple, ou invité (Firebase Auth) |
+| Sign in | Email / mot de passe, Google, Apple(non fonctionnelle car pas d'abonnement à 100$/ans), ou invité (Firebase Auth) |
 | Search | Liste des pays via l'API publique REST Countries, filtre par nom ou capitale |
 | Country | Fiche du pays (capitale, population, langues, monnaie...) + choix du style de voyage |
 | Itinerary | Gemini génère 3 journées, bouton "SAVE TO FAVORITES" |
