@@ -137,6 +137,24 @@ jeton dans les logs (`App Check debug token: ...`, sur iOS via
 et l'ajouter dans Console Firebase > App Check > Gérer les jetons de débogage.
 Sans ça, Gemini répond avec une erreur de permission.
 
+## Tests
+
+```sh
+flutter test
+```
+
+Deux tests couvrent les deux niveaux demandés. Ils ne lisent pas la clé API,
+donc `--dart-define-from-file=.env` est inutile ici.
+
+| Fichier | Type | Ce qui est vérifié |
+|---|---|---|
+| [test/models/country_test.dart](test/models/country_test.dart) | Test unitaire (`test` / `expect`) | `Country.fromJson` décode un pays de la réponse REST Countries (champs imbriqués `names.common`, `capitals[0].name`, `currencies`, `calling_codes`), puis les getters d'affichage `populationText` (`10305564` -> `10,305,564`) et `subtitle`, et enfin le filtre `matches('por')` de la barre de recherche |
+| [test/widgets/message_view_test.dart](test/widgets/message_view_test.dart) | Test de widget (`testWidgets`) | `MessageView`, le bloc des états vide et erreur, est monté dans un `MaterialApp` : les textes sont trouvés avec `find.text`, puis `tester.tap` sur le bouton confirme que le callback `onPressed` est bien appelé |
+
+Le modèle `Country` est du Dart pur et `MessageView` ne dépend d'aucun
+provider : les deux tests tournent donc sans réseau, sans Firebase et sans
+`ProviderScope`.
+
 ## Mode avion
 
 - Search : message "Could not load countries." + bouton RETRY.
