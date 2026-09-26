@@ -19,6 +19,29 @@ Projet fil rouge M2 IWID - IIM &middot; Android &amp; iOS
 
 ---
 
+## Sommaire
+
+- [Démo](#démo)
+- [Fonctionnalités](#fonctionnalités)
+- [Architecture (Riverpod 2.x + GoRouter)](#architecture-riverpod-2x--gorouter)
+- [Persistance double](#persistance-double)
+- [Démarrage rapide](#démarrage-rapide)
+  - [Prérequis](#prérequis)
+  - [Installation](#installation)
+  - [Lancer](#lancer)
+  - [App Check (une fois par simulateur / appareil)](#app-check-une-fois-par-simulateur--appareil)
+- [Tests](#tests)
+- [Mode avion](#mode-avion)
+- [Modèle Gemini](#modèle-gemini)
+- [Pitch (3 min)](#pitch-3-min)
+- [Documentation technique](#documentation-technique)
+- [Sources et ressources](#sources-et-ressources)
+  - [Cours et tutoriels](#cours-et-tutoriels)
+  - [Flutter, état et navigation](#flutter-état-et-navigation)
+  - [Firebase](#firebase)
+  - [Packages utilisés (documentation pub.dev)](#packages-utilisés-documentation-pubdev)
+  - [API publique](#api-publique)
+
 ## Démo
 
 | Recherche d'un pays | Itinéraire par Gemini | Gemini Vision | Favoris hors-ligne |
