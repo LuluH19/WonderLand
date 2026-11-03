@@ -49,6 +49,7 @@ app.*.map.json
 
 # Secrets
 .env
+**/google-services.json
 
 # Gradle (build Android lancé depuis android/)
 android/build/
